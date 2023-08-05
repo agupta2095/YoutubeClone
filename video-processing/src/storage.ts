@@ -40,18 +40,21 @@ export function setupDirectories() {
 export function convertVideo(rawVideoPath:string, convertedVideoPath:string) {
     return new Promise<void>((resolve, reject) => {
         ffmpeg(`${localRawVideoDir}/${rawVideoPath}`)
-        .outputOptions('-vf', 'scale-=1:360')
+        .fps(30)
+        .addOptions(["-crf 28"])
         .on("end", function() {
             console.log("Video Processed Sucessfully");
             resolve();
         })
         .on("error", function(err : any) {
             console.log("Error occurred " + err.message);
+            console.log(err.stack);
             reject(err);
         })
         .save(`${localProcessedVideoDir}/${convertedVideoPath}`);
     });
 }
+
 
 
 /**
@@ -67,6 +70,7 @@ export async function downloadRawVideo(videoName:string) {
     );
     console.log(`google storage: gs://${rawVideoBucketName}/${videoName} downloaded to ${localRawVideoDir}/${videoName}`);
 }
+
 
 
 /**
@@ -130,4 +134,23 @@ export function deleteRawVideo(videoName : string) {
  */
 export function deleteProcessedVideo(videoName : string) {
     return deleteFile(`${localProcessedVideoDir}/${videoName}`)
+  }
+
+
+
+
+  export function convertTo360p(inputFilePath : string, outputFilePath :string) {
+    const videoConverter = require('video-converter');
+    return new Promise<void>((resolve, reject) => {
+      videoConverter.convert(`${localRawVideoDir}/${inputFilePath}`, 
+      `${localProcessedVideoDir}/${outputFilePath}`, '360p', (err : any) => {
+        if (err) {
+          console.error('Error occurred while converting video:', err.message);
+          reject(err);
+        } else {
+          console.log('Video converted successfully.');
+          resolve();
+        }
+      });
+    });
   }
