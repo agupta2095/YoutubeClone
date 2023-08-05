@@ -1,27 +1,41 @@
-# Use an official Node runtime as a parent image
-FROM node:18
+# Stage 1: Build stage
+FROM node:18 AS builder
 
-#Set the working directory in the container to /app
-#A docker file is the blueprint of a docker image
-#A docker image is the blueprint of a container 
-#A docker image can be used to instantiate two or more containers
-#A container is actually going to run our code within an isolated environment
+# Set the working directory in the container to /app
 WORKDIR /app
 
-#Copy package.json and package-lock.json into the working directory
+# Copy package.json and package-lock.json into the working directory
 COPY package*.json ./
 
-#Install any packages specified in package.json
+# Install any needed packages specified in package.json
 RUN npm install
 
-#Install ffmpeg in the container
-RUN apt-get update && apt-get install -y ffmpeg
-
-#Copy app source inside the docker image
+# Bundle app source inside the docker image
 COPY . .
 
-#Make port 3000 available outside the container
-EXPOSE 300
+# Build the app
+RUN npm run build
 
-#Define the cmd to start your app using CMD [only one comamnd allowed]
-CMD ["npm", "start"]
+# Stage 2: Production stage
+FROM node:18
+
+# Install ffmpeg in the container
+RUN apt-get update && apt-get install -y ffmpeg
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --only=production
+
+# Copy built app from the builder stage
+COPY --from=builder /app/dist ./dist
+
+# Make port 3000 available to the world outside this container
+EXPOSE 8080
+
+# Define the command to run your app using CMD which defines your runtime
+CMD [ "npm", "run", "serve" ]
