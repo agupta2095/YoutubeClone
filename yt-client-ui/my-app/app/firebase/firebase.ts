@@ -10,7 +10,7 @@ import {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "AIzaSyA27DKHBjYIKq_etjnDVC_Y6GiyQRChenQ",
   authDomain: "yt-clone-akgu.firebaseapp.com",
   projectId: "yt-clone-akgu",
   appId: "1:204028752318:web:0fd8f77cfb7661c88609ef"
