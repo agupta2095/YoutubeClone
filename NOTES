@@ -1,0 +1,12 @@
+Serverless Functions (Function-as-a-Service, FaaS):
+
+Serverless functions, often referred to as Function-as-a-Service (FaaS), 
+are a cloud computing model where you write and deploy individual functions 
+that are executed in response to events. In a serverless architecture, 
+you don't need to manage the underlying server infrastructure/
+
+Firebase Cloud Functions are stateless by design, meaning that they should not rely on maintaining internal state between invocations. They are also serverless because Firebase automatically handles the underlying infrastructure, scaling, and execution of the functions based on events triggered within your Firebase project.
+
+Google Cloud Signed URLs
+A signed URL is a URL that provides limited permission and time to make a request. Signed URLs contain authentication information in their query string, allowing users without credentials to perform specific actions on a resource.
+In his project create a function that will create a signed URL for uploading a video to Cloud Storage. Because our bucket is private, so need to authenticate the user.
