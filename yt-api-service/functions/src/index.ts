@@ -37,4 +37,33 @@ export const createUser = functions.auth.user().onCreate((user) => {
   return;
 });
 
+import {onCall} from "firebase-functions/v2/https";
 
+// Imports the Google Cloud client library
+import {Storage} from "@google-cloud/storage";
+
+// Creates a client
+const storage = new Storage();
+const rawVideoBucketName = "ak-yt-raw-videos";
+
+export const generateSignedUrl = onCall({maxInstances: 1}, async (request) => {
+  if (!request.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+  const auth = request.auth;
+  const data = request.data;
+  const bucket = storage.bucket(rawVideoBucketName);
+  const fileName = `${auth.uid}-${Date.now()}.${data.fileExtention}}`;
+  const [url]= await bucket.file(fileName).getSignedUrl({
+    version: "v4",
+    action: "write",
+    expires: Date.now() + 15*60*1000, // 15 minutes
+  });
+
+  console.log("Generated PUT signed URL:");
+  console.log(url);
+  return {url, fileName};
+});
