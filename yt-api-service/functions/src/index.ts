@@ -56,7 +56,7 @@ export const generateSignedUrl = onCall({maxInstances: 1}, async (request) => {
   const auth = request.auth;
   const data = request.data;
   const bucket = storage.bucket(rawVideoBucketName);
-  const fileName = `${auth.uid}-${Date.now()}.${data.fileExtention}}`;
+  const fileName = `${auth.uid}-${Date.now()}.${data.fileExtention}`;
   const [url]= await bucket.file(fileName).getSignedUrl({
     version: "v4",
     action: "write",
